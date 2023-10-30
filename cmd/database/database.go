@@ -5,15 +5,44 @@ import (
 	"fmt"
 	"log"
 
+	_ "github.com/lib/pq"
 	"github.com/movieBlog/internal/environment"
-	_"github.com/lib/pq"
 )
 
 const yellow = "\x1b[33m"
 const green = "\x1b[32m"
 const reset = "\x1b[0m"
 
-func DatabaseConnection() string {
+func createAppTables(db *sql.DB) {
+	func() { //create uuid extension
+		extensionQuery := "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+
+		_, err := db.Exec(extensionQuery)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	func() { //creating movie table if it does not exist
+		query := `
+			CREATE TABLE IF NOT EXISTS movies (
+				id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+				title VARCHAR NOT NULL,
+				director VARCHAR NOT NULL,
+				description TEXT,
+				deleted BOOLEAN DEFAULT false,
+				created_at TIMESTAMP DEFAULT NOW()
+			);
+		`
+	
+		_, err := db.Exec(query)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+}
+
+func DatabaseConnection() {
 	user, password, host, port, databaseName := environment.EnvVariable("PGUSER"), environment.EnvVariable("PGPASSWORD"), environment.EnvVariable("PGHOST"), environment.EnvVariable("PGPORT"), environment.EnvVariable("PGDATABASE")
 	connectionString := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, databaseName)
 
@@ -30,6 +59,10 @@ func DatabaseConnection() string {
 	if err = db.Ping(); err != nil {
 		log.Fatal(err)
 	}
-	
-	return ""
+
+	createAppTables(db)
+}
+
+func GetMovieByTitle() {
+
 }
