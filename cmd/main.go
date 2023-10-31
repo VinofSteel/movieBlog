@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	database.DatabaseConnection()
+	database.InitializeDB()
 
 	port := ":8000"
 	fmt.Printf("Server running in port %v\n", port)

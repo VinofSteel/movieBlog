@@ -9,9 +9,16 @@ import (
 	"github.com/movieBlog/internal/environment"
 )
 
+type Movie struct {
+	Title       string
+	Director    string
+}
+
 const yellow = "\x1b[33m"
 const green = "\x1b[32m"
 const reset = "\x1b[0m"
+
+var ConnectionString string
 
 func createAppTables(db *sql.DB) {
 	func() { //create uuid extension
@@ -42,12 +49,12 @@ func createAppTables(db *sql.DB) {
 	}()
 }
 
-func DatabaseConnection() {
+func InitializeDB() {
 	user, password, host, port, databaseName := environment.EnvVariable("PGUSER"), environment.EnvVariable("PGPASSWORD"), environment.EnvVariable("PGHOST"), environment.EnvVariable("PGPORT"), environment.EnvVariable("PGDATABASE")
-	connectionString := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, databaseName)
+	ConnectionString = fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, databaseName)
 
 	fmt.Printf(yellow+"Opening connection with database %v on port %v..."+reset+"\n", databaseName, port)	
-	db, err := sql.Open("postgres", connectionString)
+	db, err := sql.Open("postgres", ConnectionString)
 	fmt.Printf(green + "Connection opened!" + reset + "\n")
 
 	defer db.Close()
@@ -63,6 +70,22 @@ func DatabaseConnection() {
 	createAppTables(db)
 }
 
-func GetMovieByTitle() {
+func GetMovies(db *sql.DB) ([]Movie, error) {
+	query := "SELECT title, director FROM movies WHERE deleted = false;"
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
+	var movies []Movie
+	for rows.Next() {
+		var movie Movie
+		if err := rows.Scan(&movie.Title, &movie.Director); err != nil {
+			return nil, err
+		}
+		movies = append(movies, movie)
+	}
+
+	return movies, nil
 }
