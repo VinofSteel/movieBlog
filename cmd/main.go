@@ -5,14 +5,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/movieBlog/cmd/handlers"
 	"github.com/movieBlog/cmd/database"
+	"github.com/movieBlog/cmd/handlers"
+	"github.com/movieBlog/internal/environment"
 )
 
 func main() {
 	database.InitializeDB()
 
-	port := ":8000"
+	port := environment.EnvVariable("PORT")
 	fmt.Printf("Server running in port %v\n", port)
 
 	http.HandleFunc("/", handlers.HandlerHomepage)
