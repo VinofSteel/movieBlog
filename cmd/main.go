@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/movieBlog/cmd/database"
-	"github.com/movieBlog/cmd/handlers"
+	"github.com/movieBlog/cmd/router"
 	"github.com/movieBlog/internal/environment"
 )
 
@@ -16,7 +16,7 @@ func main() {
 	port := environment.EnvVariable("PORT")
 	fmt.Printf("Server running in port %v\n", port)
 
-	http.HandleFunc("/", handlers.HandlerHomepage)
+	router.Router()
 
 	log.Fatal(http.ListenAndServe(port, nil))
 }
