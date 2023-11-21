@@ -53,7 +53,7 @@ func InitializeDB() {
 	user, password, host, port, databaseName := environment.EnvVariable("PGUSER"), environment.EnvVariable("PGPASSWORD"), environment.EnvVariable("PGHOST"), environment.EnvVariable("PGPORT"), environment.EnvVariable("PGDATABASE")
 	ConnectionString = fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, databaseName)
 
-	fmt.Printf(yellow+"Opening connection with database %v on port %v..."+reset+"\n", databaseName, port)	
+	fmt.Printf(yellow+"Opening connection with database %v on port %v..."+reset+"\n", databaseName, port)
 	db, err := sql.Open("postgres", ConnectionString)
 	fmt.Printf(green + "Connection opened!" + reset + "\n")
 
