@@ -5,6 +5,8 @@ para a prática de Golang + HTMX.
 - Postgres 16.0.1 de DB 
 - HTMX no front
 
+#### [Vídeo de demonstração do projeto](https://i.imgur.com/XXE2a6V.mp4)
+
 Para rodar, basta criar um arquivo .env na raiz do projeto, onde os dados são o seguinte:
 
 - PGHOST= URL em que o banco em Postgres está rodando. Se você está rodando o banco localmente, seria "localhost"
